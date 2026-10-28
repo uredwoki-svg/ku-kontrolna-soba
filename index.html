@@ -235,11 +235,11 @@ function animHost(t){const s=t*.001;animTools(s);B.scale.y=1+Math.sin(s*1.6)*.00
 drawCard("");
 
 // ===== alati na stolu =====
-const TOOLS=[["Slack","💬","#5b4bb7","https://app.slack.com"],["Gmail","✉️","#c8453a","https://mail.google.com"],["Drive","📁","#2f8f5b","https://drive.google.com"],["FINA","🧾","#1f6fb5","https://www.fina.hr"],["MOSTportal","🌉","#c4501b","https://woki-portal.netlify.app"],["Franz Koch","📷","#b63a85","https://www.instagram.com/franzkoch_gastrobar/"],["Walpo","📷","#8a4fb6","https://www.instagram.com/walpoheritage/"],["Bulart","📷","#c4503a","https://www.instagram.com/bulart_food/"],["Instagram","📷","#4a5260","https://www.instagram.com/"]];
+const TOOLS=[["Slack","💬","#5b4bb7","https://app.slack.com"],["Gmail","✉️","#c8453a","https://mail.google.com"],["Drive","📁","#2f8f5b","https://drive.google.com"],["FINA","🧾","#1f6fb5","https://www.fina.hr"],["MOST KU","🌉","#c4501b","https://woki-portal.netlify.app"],["Remaris","🛎️","#0f7a8a","https://kreativno.remaris.hr/Account/Logon?ReturnUrl=%2f"],["Franz Koch","📷","#b63a85","https://www.instagram.com/franzkoch_gastrobar/"],["Walpo","📷","#8a4fb6","https://www.instagram.com/walpoheritage/"],["Bulart","📷","#c4503a","https://www.instagram.com/bulart_food/"],["Instagram","📷","#4a5260","https://www.instagram.com/"]];
 const toolMeshes=[],TZ=9.7,TY=2.05;
 {const sh=new THREE.Shape(),r=.3,a=.75;sh.moveTo(-a+r,-a);sh.lineTo(a-r,-a);sh.quadraticCurveTo(a,-a,a,-a+r);sh.lineTo(a,a-r);sh.quadraticCurveTo(a,a,a-r,a);sh.lineTo(-a+r,a);sh.quadraticCurveTo(-a,a,-a,a-r);sh.lineTo(-a,-a+r);sh.quadraticCurveTo(-a,-a,-a+r,-a);
  const eg=new THREE.ExtrudeGeometry(sh,{depth:.3,bevelEnabled:false});eg.translate(0,0,-.15);
- TOOLS.forEach((t,i)=>{const g=new THREE.Group();g.position.set((i-4)*1.95,TY,TZ);
+ TOOLS.forEach((t,i)=>{const g=new THREE.Group();g.position.set((i-(TOOLS.length-1)/2)*1.95,TY,TZ);
   const body=new THREE.Mesh(eg,new THREE.MeshStandardMaterial({color:new THREE.Color(t[2]).multiplyScalar(.55),roughness:.45}));g.add(body);
   const [c,cg]=mk(256,256);cg.fillStyle=t[2];cg.beginPath();cg.roundRect?cg.roundRect(0,0,256,256,52):cg.rect(0,0,256,256);cg.fill();
   const gr=cg.createLinearGradient(0,0,0,256);gr.addColorStop(0,"rgba(255,255,255,.22)");gr.addColorStop(1,"rgba(0,0,0,.18)");cg.fillStyle=gr;cg.fill();
@@ -261,7 +261,7 @@ function drawHead(){hg.fillStyle=C.bg;hg.fillRect(0,0,4096,192);hg.fillStyle=C.c
 drawHead();
 // pogled sobe
 const V={yaw:0,pit:.03,dist:32,tx:0,ty:6.4,tz:0,bs:0},G={dist:32,tx:0,ty:6.4,tz:0,bs:0},Z={v:1};let focus=-1,need=true;
-function fit(i){const t=Math.tan(20*Math.PI/180),asp=rcam.aspect;let w,h,cx,cy,cz=0,bs=0;if(i<0){w=29.5;h=14.7;cx=-2.3;cy=6.3}else if(i===8){w=18;h=6;cx=0;cy=1.5;cz=TZ}else if(i===7){HG.updateMatrixWorld(true);const v=new THREE.Vector3(-2.8,3.2,0);HG.localToWorld(v);w=11.5;h=8.4;cx=v.x;cy=v.y;cz=v.z;bs=.35}else if(i===6){IGG.updateMatrixWorld(true);const v6=new THREE.Vector3(0,6.2,0);IGG.localToWorld(v6);w=29.5;h=14.7;cx=v6.x;cy=v6.y;cz=v6.z;bs=IGRY}else{w=8.5;h=5.4;cx=PX[i%3];cy=PY[i<3?0:1]}return {dist:Math.max(h/2/t,w/2/(t*asp))*1.03,tx:cx,ty:cy,tz:cz,bs:bs,pt:i===8?.3:.03}}
+function fit(i){const t=Math.tan(20*Math.PI/180),asp=rcam.aspect;let w,h,cx,cy,cz=0,bs=0;if(i<0){w=29.5;h=14.7;cx=-2.3;cy=6.3}else if(i===8){w=21.5;h=6;cx=0;cy=1.5;cz=TZ}else if(i===7){HG.updateMatrixWorld(true);const v=new THREE.Vector3(-2.8,3.2,0);HG.localToWorld(v);w=11.5;h=8.4;cx=v.x;cy=v.y;cz=v.z;bs=.35}else if(i===6){IGG.updateMatrixWorld(true);const v6=new THREE.Vector3(0,6.2,0);IGG.localToWorld(v6);w=29.5;h=14.7;cx=v6.x;cy=v6.y;cz=v6.z;bs=IGRY}else{w=8.5;h=5.4;cx=PX[i%3];cy=PY[i<3?0:1]}return {dist:Math.max(h/2/t,w/2/(t*asp))*1.03,tx:cx,ty:cy,tz:cz,bs:bs,pt:i===8?.3:.03}}
 function setFocus(i){focus=i;Object.assign(G,fit(i));Z.v=1;V.yaw=0;V.pit=G.pt;document.getElementById("nm").textContent=i<0?"Cijeli zid":panels[i].n;document.getElementById("bw").classList.toggle("on",i<0);document.getElementById("igbar").hidden=i!==6;document.getElementById("bh").classList.toggle("on",i===7);document.getElementById("bt").classList.toggle("on",i===8);document.getElementById("bi").classList.toggle("on",i===6);need=true}
 function roomCam(){const cp=Math.cos(V.pit),a=V.yaw+V.bs;rcam.position.set(V.tx+V.dist*Math.sin(a)*cp,V.ty+V.dist*Math.sin(V.pit),V.tz+V.dist*Math.cos(a)*cp);rcam.lookAt(V.tx,V.ty,V.tz)}
 let mode="room";
@@ -364,8 +364,9 @@ const C=[
 [["otvori gmail","gmail","mail"],"Otvori Gmail",tool("gmail")],
 [["otvori drive","drive"],"Otvori Drive",tool("drive")],
 [["otvori fina","fina"],"Otvori FINA",tool("fina")],
-[["otvori mostportal","mostportal","most portal"],"Otvori MOSTportal",tool("mostportal")],
-[["pomoc","naredbe"],"Pomoć",()=>say("<b>Naredbe:</b>\nzid · Instagram · voditelj · alati\niduće · prethodno · ciklus\nsve (cijeli zaslon) · izlaz (van iz cijelog zaslona)\nDrži desnu tipku miša ili razmaknicu i govori · PageUp/PageDown = prethodno/iduće\nkontrolna soba · 3D grad\npromet · objekti · plaćanja · po satima · 28 dana · artikli\nKorzo · Franz Koch · Walpo · Bulart\notvori Slack / Gmail / Drive / FINA / MOSTportal",14000)]
+[["otvori mostportal","mostportal","most portal","most ku","otvori most ku","otvori most portal"],"Otvori MOST KU",tool("most ku")],
+[["otvori remaris","remaris","remarisa"],"Otvori Remaris",tool("remaris")],
+[["pomoc","naredbe"],"Pomoć",()=>say("<b>Naredbe:</b>\nzid · Instagram · voditelj · alati\niduće · prethodno · ciklus\nsve (cijeli zaslon) · izlaz (van iz cijelog zaslona)\nDrži desnu tipku miša ili razmaknicu i govori · PageUp/PageDown = prethodno/iduće\nkontrolna soba · 3D grad\npromet · objekti · plaćanja · po satima · 28 dana · artikli\nKorzo · Franz Koch · Walpo · Bulart\notvori Slack / Gmail / Drive / FINA / MOST KU / Remaris",14000)]
 ];
 const FZ=[["bulart","Instagram Bulart"],["korzo","Instagram Korzo 23"],["walpo","Instagram Hotel Walpo"],["valpo","Instagram Hotel Walpo"],["franz","Instagram Franz Koch"],["koch","Instagram Franz Koch"],["franko","Instagram Franz Koch"]];
 function lev(a,b){const m=a.length,n=b.length,d=[];for(let i=0;i<=m;i++){d[i]=[i];for(let j=1;j<=n;j++)d[i][j]=i?0:j}for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}

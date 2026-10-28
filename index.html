@@ -271,13 +271,13 @@ function size(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(
  Object.assign(G,fit(focus));Object.assign(V,{dist:G.dist*Z.v,tx:G.tx,ty:G.ty,tz:G.tz,bs:G.bs});need=true}
 // interakcija
 const el=renderer.domElement,pts=new Map();let moved=0,pd=0;
-el.addEventListener("pointerdown",e=>{el.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);moved=0;if(mode==="city"){auto=false;ub()}stopCyc()});
+el.addEventListener("pointerdown",e=>{if(e.button===2)return;el.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);moved=0;if(mode==="city"){auto=false;ub()}stopCyc()});
 el.addEventListener("pointermove",e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId);
  if(pts.size==1){const dx=e.clientX-p[0],dy=e.clientY-p[1];moved+=Math.abs(dx)+Math.abs(dy);
   if(mode==="city"){th-=dx*.006;ph=Math.min(1.5,Math.max(.25,ph-dy*.006))}else{V.yaw=Math.max(-.7,Math.min(.7,V.yaw-dx*.004));V.pit=Math.max(-.2,Math.min(.4,V.pit+dy*.003))}}
  else{pts.set(e.pointerId,[e.clientX,e.clientY]);const a=[...pts.values()],d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);if(pd){if(mode==="city")dist=Math.min(70,Math.max(10,dist*pd/d));else Z.v=Math.min(1.6,Math.max(.4,Z.v*pd/d))}pd=d;moved=99}
  pts.set(e.pointerId,[e.clientX,e.clientY]);need=true});
-el.addEventListener("pointerup",e=>{pts.delete(e.pointerId);pd=0;if(moved<6)select(e)});
+el.addEventListener("pointerup",e=>{if(e.button===2)return;pts.delete(e.pointerId);pd=0;if(moved<6)select(e)});
 el.addEventListener("pointercancel",e=>{pts.delete(e.pointerId);pd=0});
 el.addEventListener("wheel",e=>{e.preventDefault();const f=1+e.deltaY*.001;if(mode==="city")dist=Math.min(70,Math.max(10,dist*f));else Z.v=Math.min(1.6,Math.max(.4,Z.v*f));need=true},{passive:false});
 const rc=new THREE.Raycaster(),mv=new THREE.Vector2();let sel=null;
@@ -357,42 +357,64 @@ const C=[
 [["28 dana","dvadeset osam dana","dana"],"28 dana",room(()=>setFocus(4))],
 [["top artikli","artikli","artikle"],"Top artikli",room(()=>setFocus(5))],
 [["korzo","korza","korzu","korzo 23"],"Instagram Korzo 23",ig(0)],
-[["franz koch","franz","koch"],"Instagram Franz Koch",ig(1)],
-[["walpo","valpo","hotel walpo","hotel valpo","walpoa","valpoa"],"Instagram Hotel Walpo",ig(2)],
-[["bulart"],"Instagram Bulart",ig(3)],
+[["franz koch","franz","koch","franko","franco","frank koch","franz kock"],"Instagram Franz Koch",ig(1)],
+[["walpo","valpo","hotel walpo","hotel valpo","walpoa","valpoa","valpovo","hotel valpovo"],"Instagram Hotel Walpo",ig(2)],
+[["bulart","bullard","bulat","bular","bulard","bullard 1887","bulart 1887","bulat 1887"],"Instagram Bulart",ig(3)],
 [["otvori slack","slack"],"Otvori Slack",tool("slack")],
 [["otvori gmail","gmail","mail"],"Otvori Gmail",tool("gmail")],
 [["otvori drive","drive"],"Otvori Drive",tool("drive")],
 [["otvori fina","fina"],"Otvori FINA",tool("fina")],
 [["otvori mostportal","mostportal","most portal"],"Otvori MOSTportal",tool("mostportal")],
-[["pomoc","naredbe"],"Pomoć",()=>say("<b>Naredbe:</b>\nzid · Instagram · voditelj · alati\niduće · prethodno · ciklus\nsve (cijeli zaslon) · izlaz (van iz cijelog zaslona)\nkontrolna soba · 3D grad\npromet · objekti · plaćanja · po satima · 28 dana · artikli\nKorzo · Franz Koch · Walpo · Bulart\notvori Slack / Gmail / Drive / FINA / MOSTportal",14000)]
+[["pomoc","naredbe"],"Pomoć",()=>say("<b>Naredbe:</b>\nzid · Instagram · voditelj · alati\niduće · prethodno · ciklus\nsve (cijeli zaslon) · izlaz (van iz cijelog zaslona)\nDrži desnu tipku miša ili razmaknicu i govori · PageUp/PageDown = prethodno/iduće\nkontrolna soba · 3D grad\npromet · objekti · plaćanja · po satima · 28 dana · artikli\nKorzo · Franz Koch · Walpo · Bulart\notvori Slack / Gmail / Drive / FINA / MOSTportal",14000)]
 ];
+const FZ=[["bulart","Instagram Bulart"],["korzo","Instagram Korzo 23"],["walpo","Instagram Hotel Walpo"],["valpo","Instagram Hotel Walpo"],["franz","Instagram Franz Koch"],["koch","Instagram Franz Koch"],["franko","Instagram Franz Koch"]];
+function lev(a,b){const m=a.length,n=b.length,d=[];for(let i=0;i<=m;i++){d[i]=[i];for(let j=1;j<=n;j++)d[i][j]=i?0:j}for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+let lastFz=null;
+function fuzzy(alts){lastFz=null;for(const a of alts)for(const w of norm(a).split(" ")){if(w.length<5)continue;for(const f of FZ){if(lev(w,f[0])<=1){const c=C.find(x=>x[1]===f[1]);if(c){lastFz=w+"~"+f[0];return c}}}}return null}
 function match(alts){let best=null,bl=0;for(const a of alts){const n=" "+norm(a)+" ";for(const c of C)for(const p of c[0]){const pp=" "+p+" ";if(n.includes(pp)&&p.length>bl){best=c;bl=p.length}}}return best}
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,on=false,tPress=0,tStart=0,wd=0,stopT=0,releasing=false;
 if(!SR){vm.onclick=()=>say("Ovaj preglednik ne podržava prepoznavanje govora. Koristi Chrome.")}
 else{
  function reset(why){clearTimeout(wd);try{if(rec){rec.onresult=rec.onerror=rec.onend=null;rec.abort()}}catch(e){}rec=null;on=false;releasing=false;vm.classList.remove("rec");vm.textContent="🎤 Govori";if(why)LOG("reset",{err:why})}
- function start(){
+ const MICTAG=(function(){try{return new URLSearchParams(location.search).get("mic")||null}catch(e){return null}})();let SRC="?",micLogged=0;
+ function micInfo(){if(micLogged>=2||!navigator.mediaDevices||!navigator.mediaDevices.enumerateDevices)return;micLogged++;navigator.mediaDevices.enumerateDevices().then(l=>{const a=l.filter(x=>x.kind==="audioinput").slice(0,6).map(x=>(x.deviceId==="default"?"[default] ":"")+(x.label||"(bez naziva)").slice(0,70));LOG("mic",{d:{tag:MICTAG,devices:a}})}).catch(()=>{})}
+ function start(src){
+  SRC=src||"?";micInfo();
   if(wantFS&&!document.fullscreenElement)enterFS();
   if(on&&!releasing){return}
   if(on){reset("novi pritisak tijekom slušanja")}
-  clearTimeout(stopT);tPress=performance.now();LOG("press");
+  clearTimeout(stopT);tPress=performance.now();LOG("press",{d:{src:SRC,mic:MICTAG}});
   rec=new SR();rec.lang="hr-HR";rec.interimResults=false;rec.maxAlternatives=3;rec.continuous=false;const my=rec;
   rec.onstart=()=>{tStart=performance.now();LOG("rec_start",{d:{lat:Math.round(tStart-tPress)}})};
-  rec.onresult=e=>{if(my!==rec)return;const alts=[];for(let i=0;i<e.results[0].length;i++)alts.push(e.results[0][i].transcript);const heard=alts[0];st.h++;const c=match(alts);
+  rec.onresult=e=>{if(my!==rec)return;const alts=[];for(let i=0;i<e.results[0].length;i++)alts.push(e.results[0][i].transcript);const heard=alts[0];st.h++;let c=match(alts);let fz=null;if(!c){c=fuzzy(alts);if(c)fz=lastFz}
    if(wantFS&&!document.fullscreenElement)enterFS();
-   if(c){st.ok++;let er=null;try{c[2]()}catch(x){er=String(x).slice(0,100)}LOG("result",{heard:heard,cmd:c[1],err:er,d:{alts:alts.length,fsAfter:null}});setTimeout(()=>LOG("after_cmd",{cmd:c[1]}),400);say("Čuo sam: <b>“"+heard+"”</b>\n→ "+c[1]+"\nPrepoznato "+st.ok+"/"+st.h)}
+   if(c){st.ok++;let er=null;try{c[2]()}catch(x){er=String(x).slice(0,100)}LOG("result",{heard:heard,cmd:c[1],err:er,d:{alts:alts.length,fz:fz,src:SRC,mic:MICTAG}});setTimeout(()=>LOG("after_cmd",{cmd:c[1]}),400);say("Čuo sam: <b>“"+heard+"”</b>\n→ "+c[1]+"\nPrepoznato "+st.ok+"/"+st.h)}
    else{LOG("result",{heard:heard,cmd:null});say("Čuo sam: <b>“"+heard+"”</b>\nNije prepoznato (reci “pomoć”)\nPrepoznato "+st.ok+"/"+st.h)}};
   rec.onerror=e=>{if(my!==rec)return;const m={"not-allowed":"Mikrofon nije dopušten.","service-not-allowed":"Chrome ne dopušta uslugu govora.","no-speech":"Nisam ništa čuo (drži gumb dok govoriš).","audio-capture":"Nema mikrofona.","network":"Greška mreže pri prepoznavanju.","aborted":"Slušanje prekinuto."};LOG("error",{err:e.error});if(e.error!=="aborted")say(m[e.error]||("Greška: "+e.error))};
   rec.onend=()=>{if(my!==rec)return;LOG("rec_end",{d:{dur:Math.round(performance.now()-tStart)}});reset();if(wantFS&&!document.fullscreenElement)enterFS()};
   try{rec.start();on=true;releasing=false;vm.classList.add("rec");vm.textContent="🎤 Slušam…";say("Slušam… reci naredbu",8000);clearTimeout(wd);wd=setTimeout(()=>{if(on)reset("watchdog 9 s bez kraja")},9000)}catch(x){LOG("start_throw",{err:String(x).slice(0,100)});reset()}}
  function stop(){if(!on||releasing)return;releasing=true;const hold=Math.round(performance.now()-tPress);LOG("release",{hold:hold});const wait=Math.max(700,1300-hold);clearTimeout(stopT);stopT=setTimeout(()=>{try{if(rec)rec.stop()}catch(e){}},wait)}
- vm.addEventListener("pointerdown",e=>{e.preventDefault();try{vm.setPointerCapture(e.pointerId)}catch(x){}start()});
+ vm.addEventListener("pointerdown",e=>{e.preventDefault();try{vm.setPointerCapture(e.pointerId)}catch(x){}start("gumb")});
  ["pointerup","pointercancel"].forEach(ev=>vm.addEventListener(ev,stop));
- document.addEventListener("keydown",e=>{if(e.key==="Escape"){wantFS=false;LOG("esc");return}if(e.code==="Space"&&!e.repeat&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||"")){e.preventDefault();start()}});
+ const typing=()=>/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||"");
+ const CK={PageDown:1,PageUp:1,ArrowRight:1,ArrowLeft:1,F5:1,Period:1,KeyB:1,Enter:1,Escape:1};
+ document.addEventListener("keydown",e=>{if(CK[e.code]&&!e.repeat)LOG("key",{d:{k:e.code}});
+  if(e.key==="Escape"){wantFS=false;LOG("esc");return}
+  if(typing())return;
+  if(e.code==="Space"&&!e.repeat){e.preventDefault();start("razmaknica");return}
+  if(e.code==="PageDown"||e.code==="ArrowRight"){e.preventDefault();if(!e.repeat)room(()=>document.getElementById("nx").click())();return}
+  if(e.code==="PageUp"||e.code==="ArrowLeft"){e.preventDefault();if(!e.repeat)room(()=>document.getElementById("pv").click())();return}
+  if(e.code==="F5"){e.preventDefault()}});
  document.addEventListener("keyup",e=>{if(e.code==="Space")stop()});
+ /* desna tipka miša = drži i govori */
+ let rbDown=false;
+ document.addEventListener("pointerdown",e=>{if(e.button!==2||typing())return;e.preventDefault();rbDown=true;start("desna")},true);
+ const rbUp=e=>{if(e.button!==2&&e.type!=="pointercancel")return;if(rbDown){rbDown=false;stop()}};
+ document.addEventListener("pointerup",rbUp,true);document.addEventListener("pointercancel",rbUp,true);
+ window.addEventListener("blur",()=>{if(rbDown){rbDown=false;stop()}});
+ document.addEventListener("contextmenu",e=>e.preventDefault());
 }
-window.__voiceTest=t=>{const c=match([t]);return c?c[1]:null};
+window.__voiceTest=t=>{const c=match([t])||fuzzy([t]);return c?c[1]:null};
 })();
 /* ===== ulaz u cijeli zaslon preko linka #cijeli-zaslon ===== */
 (function(){const g=document.getElementById("fsg");if(!g)return;

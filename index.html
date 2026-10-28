@@ -235,7 +235,7 @@ function animHost(t){const s=t*.001;animTools(s);B.scale.y=1+Math.sin(s*1.6)*.00
 drawCard("");
 
 // ===== alati na stolu =====
-const TOOLS=[["Slack","💬","#5b4bb7","https://app.slack.com"],["Gmail","✉️","#c8453a","https://mail.google.com"],["Drive","📁","#2f8f5b","https://drive.google.com"],["FINA","🧾","#1f6fb5","https://www.fina.hr"],["MOST KU","🌉","#c4501b","https://woki-portal.netlify.app"],["Remaris","🛎️","#0f7a8a","https://kreativno.remaris.hr/Account/Logon?ReturnUrl=%2f"],["Franz Koch","📷","#b63a85","https://www.instagram.com/franzkoch_gastrobar/"],["Walpo","📷","#8a4fb6","https://www.instagram.com/walpoheritage/"],["Bulart","📷","#c4503a","https://www.instagram.com/bulart_food/"],["Instagram","📷","#4a5260","https://www.instagram.com/"]];
+const TOOLS=[["Slack","💬","#5b4bb7","https://app.slack.com"],["Gmail","✉️","#c8453a","https://mail.google.com"],["Drive","📁","#2f8f5b","https://drive.google.com"],["FINA","🧾","#1f6fb5","https://www.fina.hr"],["MOST KU","🌉","#c4501b","https://portal.conetco.io"],["Remaris","🛎️","#0f7a8a","https://kreativno.remaris.hr/Account/Logon?ReturnUrl=%2f"],["Franz Koch","📷","#b63a85","https://www.instagram.com/franzkoch_gastrobar/"],["Walpo","📷","#8a4fb6","https://www.instagram.com/walpoheritage/"],["Bulart","📷","#c4503a","https://www.instagram.com/bulart_food/"],["Instagram","📷","#4a5260","https://www.instagram.com/"]];
 const toolMeshes=[],TZ=9.7,TY=2.05;
 {const sh=new THREE.Shape(),r=.3,a=.75;sh.moveTo(-a+r,-a);sh.lineTo(a-r,-a);sh.quadraticCurveTo(a,-a,a,-a+r);sh.lineTo(a,a-r);sh.quadraticCurveTo(a,a,a-r,a);sh.lineTo(-a+r,a);sh.quadraticCurveTo(-a,a,-a,a-r);sh.lineTo(-a,-a+r);sh.quadraticCurveTo(-a,-a,-a+r,-a);
  const eg=new THREE.ExtrudeGeometry(sh,{depth:.3,bevelEnabled:false});eg.translate(0,0,-.15);

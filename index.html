@@ -322,7 +322,7 @@ let fsArm=false;
 function armFS(){if(fsArm||document.fullscreenElement||!wantFS)return;fsArm=true;const vs0=document.getElementById("vs");if(vs0){vs0.innerHTML="Preglednik traži dodir:\n<b>pritisni bilo koju tipku ili klikni</b> za cijeli zaslon";vs0.hidden=false}
  const go=ev=>{if(ev&&ev.key==="Escape")return;fsArm=false;document.removeEventListener("keydown",go,true);document.removeEventListener("pointerdown",go,true);if(vs0)vs0.hidden=true;try{const p=stage.requestFullscreen();if(p&&p.catch)p.catch(()=>{})}catch(e){}LOG("fs_armed_enter")};
  document.addEventListener("keydown",go,true);document.addEventListener("pointerdown",go,true);LOG("fs_armed")}
-function enterFS(){try{if(!document.fullscreenElement){const p=stage.requestFullscreen&&stage.requestFullscreen();if(p&&p.catch)p.catch(e=>{LOG("fs_refused",{err:String(e&&e.message||e).slice(0,100)});armFS()})}}catch(e){}}
+let fsPend=0;function enterFS(){try{if(!document.fullscreenElement&&performance.now()-fsPend>1500){fsPend=performance.now();const p=stage.requestFullscreen&&stage.requestFullscreen();if(p&&p.catch)p.catch(e=>{fsPend=0;if(document.fullscreenElement)return;LOG("fs_refused",{err:String(e&&e.message||e).slice(0,100)});armFS()})}}catch(e){}}
 const SESS=(Date.now().toString(36)+Math.random().toString(36).slice(2,8)),T0=performance.now();let Q=[];
 try{Q=JSON.parse(localStorage.getItem("kuglasq")||"[]")}catch(e){}
 function LOG(ev,o){o=o||{};Q.push({sess:SESS,t_ms:Math.round(performance.now()-T0),ev:ev,heard:o.heard?String(o.heard).slice(0,200):null,cmd:o.cmd||null,err:o.err||null,fs:!!document.fullscreenElement,hold_ms:o.hold||null,d:o.d||null,ua:navigator.userAgent.slice(0,200),tok:TOK2});if(Q.length>300)Q=Q.slice(-300);try{localStorage.setItem("kuglasq",JSON.stringify(Q))}catch(e){}}
@@ -342,7 +342,7 @@ const C=[
 [["cijeli zid","zid","zida","pregled"],"Zid",room(()=>setFocus(-1))],
 [["instagram","instagrama","instagram zid"],"Instagram",room(()=>setFocus(6))],
 [["virtualni voditelj","voditelj","voditelja","voditelju"],"Voditelj",room(()=>setFocus(7))],
-[["alati","alat","alate","alata"],"Alati",room(()=>setFocus(8))],
+[["alati","alat","alate","alata","plati"],"Alati",room(()=>setFocus(8))],
 [["iduce","sljedece","dalje","naprijed"],"Idući panel",room(()=>document.getElementById("nx").click())],
 [["prethodno","prethodni","natrag","nazad"],"Prethodni panel",room(()=>document.getElementById("pv").click())],
 [["ciklus","automatski","auto"],"Ciklus",room(()=>document.getElementById("bc").click())],
@@ -356,7 +356,7 @@ const C=[
 [["promet po satima","po satima","sati"],"Promet po satima",room(()=>setFocus(3))],
 [["28 dana","dvadeset osam dana","dana"],"28 dana",room(()=>setFocus(4))],
 [["top artikli","artikli","artikle"],"Top artikli",room(()=>setFocus(5))],
-[["korzo","korza","korzu","korzo 23"],"Instagram Korzo 23",ig(0)],
+[["korzo","korza","korzu","korzo 23","bordo","bordo 23"],"Instagram Korzo 23",ig(0)],
 [["franz koch","franz","koch","franko","franco","frank koch","franz kock"],"Instagram Franz Koch",ig(1)],
 [["walpo","valpo","hotel walpo","hotel valpo","walpoa","valpoa","valpovo","hotel valpovo"],"Instagram Hotel Walpo",ig(2)],
 [["bulart","bullard","bulat","bular","bulard","bullard 1887","bulart 1887","bulat 1887"],"Instagram Bulart",ig(3)],

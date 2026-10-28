@@ -297,7 +297,7 @@ document.getElementById("bi").onclick=()=>{stopCyc();setFocus(6)};document.getEl
 document.getElementById("bw").onclick=()=>{stopCyc();setFocus(-1)};
 document.getElementById("nx").onclick=()=>{stopCyc();setFocus(focus>=panels.length-1?-1:focus+1)};
 document.getElementById("pv").onclick=()=>{stopCyc();setFocus(focus<0?panels.length-1:focus-1)};
-document.getElementById("bf").onclick=()=>{try{if(document.fullscreenElement)document.exitFullscreen();else stage.requestFullscreen().catch(()=>{})}catch(e){}};
+document.getElementById("bf").onclick=()=>{try{if(document.fullscreenElement){wantFS=false;document.exitFullscreen()}else{wantFS=true;stage.requestFullscreen().catch(()=>{})}}catch(e){}};
 document.addEventListener("fullscreenchange",()=>setTimeout(size,60));
 function ub(){document.getElementById("b1").textContent="Auto-rotacija: "+(auto?"uklj.":"isklj.")}
 document.getElementById("b1").onclick=()=>{auto=!auto;ub()};
@@ -315,7 +315,17 @@ setInterval(()=>{if(mode==="room"&&!document.hidden){drawHead();need=true}},1000
 let last=0;(function loop(t){requestAnimationFrame(loop);if(document.hidden)return;if(mode==="city"&&auto&&t-last>16){th+=.0025;last=t;need=true}
  if(mode==="room"){if(t-(loop.a||0)>33){loop.a=t;animHost(t);need=true}if(step())need=true}if(need){need=false;draw()}})(0);
 
-/* ===== glasovne naredbe, razina 1 (samo navigacija) ===== */
+/* ===== glasovne naredbe v2: zaštita od zaglavljivanja, evidencija, ostanak u cijelom zaslonu ===== */
+const SB2="https://gssbvxpgwvhyghozefqi.supabase.co/rest/v1/ku_glas_log",TOK2="ku-glas-3c9d1e";
+let wantFS=!!document.fullscreenElement||location.hash==="#cijeli-zaslon";
+function enterFS(){try{if(!document.fullscreenElement){const p=stage.requestFullscreen&&stage.requestFullscreen();if(p&&p.catch)p.catch(e=>LOG("fs_refused",{err:String(e&&e.message||e).slice(0,100)}))}}catch(e){}}
+const SESS=(Date.now().toString(36)+Math.random().toString(36).slice(2,8)),T0=performance.now();let Q=[];
+try{Q=JSON.parse(localStorage.getItem("kuglasq")||"[]")}catch(e){}
+function LOG(ev,o){o=o||{};Q.push({sess:SESS,t_ms:Math.round(performance.now()-T0),ev:ev,heard:o.heard?String(o.heard).slice(0,200):null,cmd:o.cmd||null,err:o.err||null,fs:!!document.fullscreenElement,hold_ms:o.hold||null,d:o.d||null,ua:navigator.userAgent.slice(0,200),tok:TOK2});if(Q.length>300)Q=Q.slice(-300);try{localStorage.setItem("kuglasq",JSON.stringify(Q))}catch(e){}}
+async function flush(){if(!Q.length)return;const batch=Q.slice(0,50);try{const r=await fetch(SB2,{method:"POST",keepalive:true,headers:{apikey:SK,Authorization:"Bearer "+SK,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify(batch)});if(r.ok){Q=Q.slice(batch.length);try{localStorage.setItem("kuglasq",JSON.stringify(Q))}catch(e){}}}catch(e){}}
+setInterval(flush,4000);addEventListener("pagehide",flush);
+document.addEventListener("fullscreenchange",()=>{LOG("fullscreenchange",{d:{now:!!document.fullscreenElement}})});
+LOG("page_load",{d:{hash:location.hash,w:innerWidth,h:innerHeight}});
 (function(){
 const vm=document.getElementById("vm"),vs=document.getElementById("vs");let vt=0,st={h:0,ok:0};
 const norm=t=>t.toLowerCase().replace(/[čć]/g,"c").replace(/š/g,"s").replace(/ž/g,"z").replace(/đ/g,"d").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
@@ -332,7 +342,8 @@ const C=[
 [["iduce","sljedece","dalje","naprijed"],"Idući panel",room(()=>document.getElementById("nx").click())],
 [["prethodno","prethodni","natrag","nazad"],"Prethodni panel",room(()=>document.getElementById("pv").click())],
 [["ciklus","automatski","auto"],"Ciklus",room(()=>document.getElementById("bc").click())],
-[["cijeli zaslon","puni zaslon","fullscreen"],"Cijeli zaslon",click("bf")],
+[["izlaz","izlaz iz cijelog zaslona","izadi iz cijelog zaslona"],"Izlaz iz cijelog zaslona",()=>{wantFS=false;try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}],
+[["sve","cijeli zaslon","puni zaslon","fullscreen"],"Cijeli zaslon",()=>{wantFS=true;enterFS()}],
 [["kontrolna soba","soba"],"Kontrolna soba",()=>{setMode("room")}],
 [["3d grad","grad","gradu"],"3D grad",click("m2")],
 [["promet dana","promet"],"Promet dana",room(()=>setFocus(0))],
@@ -350,33 +361,40 @@ const C=[
 [["otvori drive","drive"],"Otvori Drive",tool("drive")],
 [["otvori fina","fina"],"Otvori FINA",tool("fina")],
 [["otvori mostportal","mostportal","most portal"],"Otvori MOSTportal",tool("mostportal")],
-[["pomoc","naredbe"],"Pomoć",()=>say("<b>Naredbe:</b>\nzid · Instagram · voditelj · alati\niduće · prethodno · ciklus · cijeli zaslon\nkontrolna soba · 3D grad\npromet · objekti · plaćanja · po satima · 28 dana · artikli\nKorzo · Franz Koch · Walpo · Bulart\notvori Slack / Gmail / Drive / FINA / MOSTportal",14000)]
+[["pomoc","naredbe"],"Pomoć",()=>say("<b>Naredbe:</b>\nzid · Instagram · voditelj · alati\niduće · prethodno · ciklus\nsve (cijeli zaslon) · izlaz (van iz cijelog zaslona)\nkontrolna soba · 3D grad\npromet · objekti · plaćanja · po satima · 28 dana · artikli\nKorzo · Franz Koch · Walpo · Bulart\notvori Slack / Gmail / Drive / FINA / MOSTportal",14000)]
 ];
 function match(alts){let best=null,bl=0;for(const a of alts){const n=" "+norm(a)+" ";for(const c of C)for(const p of c[0]){const pp=" "+p+" ";if(n.includes(pp)&&p.length>bl){best=c;bl=p.length}}}return best}
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,on=false;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,on=false,tPress=0,tStart=0,wd=0,stopT=0,releasing=false;
 if(!SR){vm.onclick=()=>say("Ovaj preglednik ne podržava prepoznavanje govora. Koristi Chrome.")}
 else{
- function start(){if(on)return;rec=new SR();rec.lang="hr-HR";rec.interimResults=false;rec.maxAlternatives=3;rec.continuous=false;
-  rec.onresult=e=>{const alts=[];for(let i=0;i<e.results[0].length;i++)alts.push(e.results[0][i].transcript);const heard=alts[0];st.h++;const c=match(alts);
-   if(c){st.ok++;try{c[2]()}catch(x){}say("Čuo sam: <b>“"+heard+"”</b>\n→ "+c[1]+"\nPrepoznato "+st.ok+"/"+st.h)}
-   else say("Čuo sam: <b>“"+heard+"”</b>\nNije prepoznato (reci “pomoć”)\nPrepoznato "+st.ok+"/"+st.h)};
-  rec.onerror=e=>{const m={"not-allowed":"Mikrofon nije dopušten (dopusti ga u pregledniku; u artefaktu je blokiran).","no-speech":"Nisam ništa čuo.","audio-capture":"Nema mikrofona.","network":"Greška mreže pri prepoznavanju."};say(m[e.error]||("Greška: "+e.error))};
-  rec.onend=()=>{on=false;vm.classList.remove("rec");vm.textContent="🎤 Govori"};
-  try{rec.start();on=true;vm.classList.add("rec");vm.textContent="🎤 Slušam…";say("Slušam… reci naredbu",8000)}catch(x){}}
- function stop(){if(rec&&on){try{rec.stop()}catch(x){}}}
- vm.addEventListener("pointerdown",e=>{e.preventDefault();start()});
- ["pointerup","pointerleave","pointercancel"].forEach(ev=>vm.addEventListener(ev,stop));
- document.addEventListener("keydown",e=>{if(e.code==="Space"&&!e.repeat&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||"")){e.preventDefault();start()}});
+ function reset(why){clearTimeout(wd);try{if(rec){rec.onresult=rec.onerror=rec.onend=null;rec.abort()}}catch(e){}rec=null;on=false;releasing=false;vm.classList.remove("rec");vm.textContent="🎤 Govori";if(why)LOG("reset",{err:why})}
+ function start(){
+  if(wantFS&&!document.fullscreenElement)enterFS();
+  if(on&&!releasing){return}
+  if(on){reset("novi pritisak tijekom slušanja")}
+  clearTimeout(stopT);tPress=performance.now();LOG("press");
+  rec=new SR();rec.lang="hr-HR";rec.interimResults=false;rec.maxAlternatives=3;rec.continuous=false;const my=rec;
+  rec.onstart=()=>{tStart=performance.now();LOG("rec_start",{d:{lat:Math.round(tStart-tPress)}})};
+  rec.onresult=e=>{if(my!==rec)return;const alts=[];for(let i=0;i<e.results[0].length;i++)alts.push(e.results[0][i].transcript);const heard=alts[0];st.h++;const c=match(alts);
+   if(wantFS&&!document.fullscreenElement)enterFS();
+   if(c){st.ok++;let er=null;try{c[2]()}catch(x){er=String(x).slice(0,100)}LOG("result",{heard:heard,cmd:c[1],err:er,d:{alts:alts.length,fsAfter:null}});setTimeout(()=>LOG("after_cmd",{cmd:c[1]}),400);say("Čuo sam: <b>“"+heard+"”</b>\n→ "+c[1]+"\nPrepoznato "+st.ok+"/"+st.h)}
+   else{LOG("result",{heard:heard,cmd:null});say("Čuo sam: <b>“"+heard+"”</b>\nNije prepoznato (reci “pomoć”)\nPrepoznato "+st.ok+"/"+st.h)}};
+  rec.onerror=e=>{if(my!==rec)return;const m={"not-allowed":"Mikrofon nije dopušten.","service-not-allowed":"Chrome ne dopušta uslugu govora.","no-speech":"Nisam ništa čuo (drži gumb dok govoriš).","audio-capture":"Nema mikrofona.","network":"Greška mreže pri prepoznavanju.","aborted":"Slušanje prekinuto."};LOG("error",{err:e.error});if(e.error!=="aborted")say(m[e.error]||("Greška: "+e.error))};
+  rec.onend=()=>{if(my!==rec)return;LOG("rec_end",{d:{dur:Math.round(performance.now()-tStart)}});reset();if(wantFS&&!document.fullscreenElement)enterFS()};
+  try{rec.start();on=true;releasing=false;vm.classList.add("rec");vm.textContent="🎤 Slušam…";say("Slušam… reci naredbu",8000);clearTimeout(wd);wd=setTimeout(()=>{if(on)reset("watchdog 9 s bez kraja")},9000)}catch(x){LOG("start_throw",{err:String(x).slice(0,100)});reset()}}
+ function stop(){if(!on||releasing)return;releasing=true;const hold=Math.round(performance.now()-tPress);LOG("release",{hold:hold});const wait=Math.max(700,1300-hold);clearTimeout(stopT);stopT=setTimeout(()=>{try{if(rec)rec.stop()}catch(e){}},wait)}
+ vm.addEventListener("pointerdown",e=>{e.preventDefault();try{vm.setPointerCapture(e.pointerId)}catch(x){}start()});
+ ["pointerup","pointercancel"].forEach(ev=>vm.addEventListener(ev,stop));
+ document.addEventListener("keydown",e=>{if(e.key==="Escape"){wantFS=false;LOG("esc");return}if(e.code==="Space"&&!e.repeat&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||"")){e.preventDefault();start()}});
  document.addEventListener("keyup",e=>{if(e.code==="Space")stop()});
 }
 window.__voiceTest=t=>{const c=match([t]);return c?c[1]:null};
 })();
-
 /* ===== ulaz u cijeli zaslon preko linka #cijeli-zaslon ===== */
 (function(){const g=document.getElementById("fsg");if(!g)return;
  if(location.hash!=="#cijeli-zaslon"||document.fullscreenElement)return;
  g.hidden=false;
- function go(){try{const p=stage.requestFullscreen&&stage.requestFullscreen();if(p&&p.catch)p.catch(()=>{})}catch(e){}g.hidden=true;document.removeEventListener("keydown",kd,true);setTimeout(size,80)}
+ function go(){wantFS=true;try{const p=stage.requestFullscreen&&stage.requestFullscreen();if(p&&p.catch)p.catch(()=>{})}catch(e){}g.hidden=true;document.removeEventListener("keydown",kd,true);setTimeout(size,80)}
  function kd(e){if(e.key==="Escape")return;go()}
  document.getElementById("fsgo").onclick=go;document.addEventListener("keydown",kd,true);
  g.addEventListener("pointerdown",e=>{if(e.target===g)go()});

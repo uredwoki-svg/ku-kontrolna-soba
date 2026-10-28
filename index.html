@@ -235,7 +235,7 @@ function animHost(t){const s=t*.001;animTools(s);B.scale.y=1+Math.sin(s*1.6)*.00
 drawCard("");
 
 // ===== alati na stolu =====
-const TOOLS=[["Slack","💬","#5b4bb7","https://app.slack.com"],["Gmail","✉️","#c8453a","https://mail.google.com"],["Drive","📁","#2f8f5b","https://drive.google.com"],["FINA","🧾","#1f6fb5","https://www.fina.hr"],["MOST KU","🌉","#c4501b","https://portal.conetco.io"],["Remaris","🛎️","#0f7a8a","https://kreativno.remaris.hr/Account/Logon?ReturnUrl=%2f"],["Franz Koch","📷","#b63a85","https://www.instagram.com/franzkoch_gastrobar/"],["Walpo","📷","#8a4fb6","https://www.instagram.com/walpoheritage/"],["Bulart","📷","#c4503a","https://www.instagram.com/bulart_food/"],["Instagram","📷","#4a5260","https://www.instagram.com/"]];
+const TOOLS=[["Slack","💬","#5b4bb7","https://app.slack.com"],["Gmail","✉️","#c8453a","https://mail.google.com"],["Drive","📁","#2f8f5b","https://drive.google.com"],["FINA","🧾","#1f6fb5","https://www.fina.hr"],["MOST","🌉","#c4501b","https://portal.conetco.io"],["Remaris","🛎️","#0f7a8a","https://kreativno.remaris.hr/Account/Logon?ReturnUrl=%2f"],["Franz Koch","📷","#b63a85","https://www.instagram.com/franzkoch_gastrobar/"],["Walpo","📷","#8a4fb6","https://www.instagram.com/walpoheritage/"],["Bulart","📷","#c4503a","https://www.instagram.com/bulart_food/"],["Instagram","📷","#4a5260","https://www.instagram.com/"]];
 const toolMeshes=[],TZ=9.7,TY=2.05;
 {const sh=new THREE.Shape(),r=.3,a=.75;sh.moveTo(-a+r,-a);sh.lineTo(a-r,-a);sh.quadraticCurveTo(a,-a,a,-a+r);sh.lineTo(a,a-r);sh.quadraticCurveTo(a,a,a-r,a);sh.lineTo(-a+r,a);sh.quadraticCurveTo(-a,a,-a,a-r);sh.lineTo(-a,-a+r);sh.quadraticCurveTo(-a,-a,-a+r,-a);
  const eg=new THREE.ExtrudeGeometry(sh,{depth:.3,bevelEnabled:false});eg.translate(0,0,-.15);
@@ -364,9 +364,9 @@ const C=[
 [["otvori gmail","gmail","mail"],"Otvori Gmail",tool("gmail")],
 [["otvori drive","drive"],"Otvori Drive",tool("drive")],
 [["otvori fina","fina"],"Otvori FINA",tool("fina")],
-[["otvori mostportal","mostportal","most portal","most ku","otvori most ku","otvori most portal"],"Otvori MOST KU",tool("most ku")],
+[["otvori most","most","otvori mostportal","mostportal","most portal","most ku","otvori most ku","otvori most portal"],"Otvori MOST",tool("most")],
 [["otvori remaris","remaris","remarisa"],"Otvori Remaris",tool("remaris")],
-[["pomoc","naredbe"],"Pomoć",()=>say("<b>Naredbe:</b>\nzid · Instagram · voditelj · alati\niduće · prethodno · ciklus\nsve (cijeli zaslon) · izlaz (van iz cijelog zaslona)\nDrži desnu tipku miša ili razmaknicu i govori · PageUp/PageDown = prethodno/iduće\nkontrolna soba · 3D grad\npromet · objekti · plaćanja · po satima · 28 dana · artikli\nKorzo · Franz Koch · Walpo · Bulart\notvori Slack / Gmail / Drive / FINA / MOST KU / Remaris",14000)]
+[["pomoc","naredbe"],"Pomoć",()=>say("<b>Naredbe:</b>\nzid · Instagram · voditelj · alati\niduće · prethodno · ciklus\nsve (cijeli zaslon) · izlaz (van iz cijelog zaslona)\nDrži desnu tipku miša ili razmaknicu i govori · PageUp/PageDown = prethodno/iduće\nkontrolna soba · 3D grad\npromet · objekti · plaćanja · po satima · 28 dana · artikli\nKorzo · Franz Koch · Walpo · Bulart\notvori Slack / Gmail / Drive / FINA / MOST / Remaris",14000)]
 ];
 const FZ=[["bulart","Instagram Bulart"],["korzo","Instagram Korzo 23"],["walpo","Instagram Hotel Walpo"],["valpo","Instagram Hotel Walpo"],["franz","Instagram Franz Koch"],["koch","Instagram Franz Koch"],["franko","Instagram Franz Koch"]];
 function lev(a,b){const m=a.length,n=b.length,d=[];for(let i=0;i<=m;i++){d[i]=[i];for(let j=1;j<=n;j++)d[i][j]=i?0:j}for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}

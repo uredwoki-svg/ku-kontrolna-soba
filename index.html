@@ -20,6 +20,8 @@ canvas{display:block;width:100%;height:100%}
 #igbar .on{border-color:#d6409f;color:#ff8bd0}
 #toolchip{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:rgba(10,16,23,.9);color:#e8f0f7;border:1px solid #4fd1c5;border-radius:8px;padding:8px 14px;font-size:14px}
 #toolchip a{color:#4fd1c5}
+#fsg{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(5,8,12,.94);color:#e8f0f7}#fsg[hidden]{display:none}#fsg b{display:block;font-size:20px;letter-spacing:.08em;margin-bottom:18px;color:#4fd1c5}#fsg button{font-size:20px;padding:16px 28px;min-height:56px;border-radius:12px;border:2px solid #4fd1c5;background:#0e1b24;color:#e8f0f7;cursor:pointer}#fsg small{display:block;margin-top:14px;opacity:.7}
+#vm.rec{background:#c4503a;border-color:#c4503a;color:#fff}#vs{position:absolute;left:10px;top:10px;max-width:min(92%,420px);background:rgba(10,16,23,.9);color:#e8f0f7;border:1px solid #2c3e50;border-radius:8px;padding:8px 12px;font-size:13px;line-height:1.45;white-space:pre-line;pointer-events:none}#vs b{color:#4fd1c5}
 #nav .nm{pointer-events:none;color:#e8f0f7;background:rgba(10,16,23,.82);border:1px solid #2c3e50;border-radius:8px;padding:8px 12px;min-width:110px;text-align:center}
 .seg button.on{border-color:var(--accent);color:var(--accent)}
 #tip{position:absolute;left:12px;bottom:12px;right:12px;max-width:340px;background:color-mix(in srgb,var(--panel) 92%,transparent);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;pointer-events:none}
@@ -40,7 +42,7 @@ button:hover{border-color:var(--accent)}
  <div class="sub" id="sub"></div></div>
  <div class="bar seg"><button id="m1" class="on">Kontrolna soba</button><button id="m2">3D grad</button><span class="sub" id="hint"></span></div>
  <div class="kpi" id="kpi" hidden></div>
- <div id="stage"><div id="toolchip" hidden></div><div id="igbar" hidden></div><div id="nav"><button id="pv" aria-label="Prethodni">◀</button><span class="nm" id="nm">Cijeli zid</span><button id="nx" aria-label="Sljedeći">▶</button><button id="bw">Zid</button><button id="bi">Instagram</button><button id="bh">Voditelj</button><button id="bt">Alati</button><button id="bc">Ciklus</button><button id="bf">Cijeli zaslon</button></div><div id="tip" hidden><b>Dodirni zgradu</b>Visina = promet dana, svaki kat = jedan sat. Povuci za rotaciju, štipni/kotačić za zoom.</div></div>
+ <div id="stage"><div id="toolchip" hidden></div><div id="igbar" hidden></div><div id="nav"><button id="pv" aria-label="Prethodni">◀</button><span class="nm" id="nm">Cijeli zid</span><button id="nx" aria-label="Sljedeći">▶</button><button id="bw">Zid</button><button id="bi">Instagram</button><button id="bh">Voditelj</button><button id="bt">Alati</button><button id="bc">Ciklus</button><button id="bf">Cijeli zaslon</button><button id="vm" title="Drži i govori (razmaknica)">🎤 Govori</button></div><div id="vs" hidden></div><div id="fsg" hidden><div><b>MOST · KU kontrolna soba</b><button id="fsgo">▶ Uđi u kontrolnu sobu (cijeli zaslon)</button><small>ili pritisni bilo koju tipku · Esc izlazi iz cijelog zaslona</small></div></div><div id="tip" hidden><b>Dodirni zgradu</b>Visina = promet dana, svaki kat = jedan sat. Povuci za rotaciju, štipni/kotačić za zoom.</div></div>
  <div class="bar" id="cbar" hidden><button id="b1">Auto-rotacija: uklj.</button><button id="b2">Reset kamere</button>
  <span class="leg"><span>jutro</span><i></i><span>večer</span></span></div>
  <div class="sub">Snimka podataka iz Remarisa (samo KU) za radni dan 25.10.2026. Zgrade: 5 objekata, katovi = promet po satu. Stražnji red: promet KU zadnjih 28 dana. Prednji valjci: načini plaćanja. Statična snimka, ne ažurira se uživo.</div>
@@ -233,7 +235,7 @@ function animHost(t){const s=t*.001;animTools(s);B.scale.y=1+Math.sin(s*1.6)*.00
 drawCard("");
 
 // ===== alati na stolu =====
-const TOOLS=[["Slack","💬","#5b4bb7","https://app.slack.com"],["Gmail","✉️","#c8453a","https://mail.google.com"],["Drive","📁","#2f8f5b","https://drive.google.com"],["FINA","🧾","#1f6fb5","https://www.fina.hr"],["MOSTportal","🌉","#c4501b","https://portal.conetco.io"],["Franz Koch","📷","#b63a85","https://www.instagram.com/franzkoch_gastrobar/"],["Walpo","📷","#8a4fb6","https://www.instagram.com/walpoheritage/"],["Bulart","📷","#c4503a","https://www.instagram.com/bulart_food/"],["Instagram","📷","#4a5260","https://www.instagram.com/"]];
+const TOOLS=[["Slack","💬","#5b4bb7","https://app.slack.com"],["Gmail","✉️","#c8453a","https://mail.google.com"],["Drive","📁","#2f8f5b","https://drive.google.com"],["FINA","🧾","#1f6fb5","https://www.fina.hr"],["MOSTportal","🌉","#c4501b","https://woki-portal.netlify.app"],["Franz Koch","📷","#b63a85","https://www.instagram.com/franzkoch_gastrobar/"],["Walpo","📷","#8a4fb6","https://www.instagram.com/walpoheritage/"],["Bulart","📷","#c4503a","https://www.instagram.com/bulart_food/"],["Instagram","📷","#4a5260","https://www.instagram.com/"]];
 const toolMeshes=[],TZ=9.7,TY=2.05;
 {const sh=new THREE.Shape(),r=.3,a=.75;sh.moveTo(-a+r,-a);sh.lineTo(a-r,-a);sh.quadraticCurveTo(a,-a,a,-a+r);sh.lineTo(a,a-r);sh.quadraticCurveTo(a,a,a-r,a);sh.lineTo(-a+r,a);sh.quadraticCurveTo(-a,a,-a,a-r);sh.lineTo(-a,-a+r);sh.quadraticCurveTo(-a,-a,-a+r,-a);
  const eg=new THREE.ExtrudeGeometry(sh,{depth:.3,bevelEnabled:false});eg.translate(0,0,-.15);
@@ -312,4 +314,71 @@ const portrait=stage.clientWidth<stage.clientHeight*0.9;setMode("room");setFocus
 setInterval(()=>{if(mode==="room"&&!document.hidden){drawHead();need=true}},1000);
 let last=0;(function loop(t){requestAnimationFrame(loop);if(document.hidden)return;if(mode==="city"&&auto&&t-last>16){th+=.0025;last=t;need=true}
  if(mode==="room"){if(t-(loop.a||0)>33){loop.a=t;animHost(t);need=true}if(step())need=true}if(need){need=false;draw()}})(0);
+
+/* ===== glasovne naredbe, razina 1 (samo navigacija) ===== */
+(function(){
+const vm=document.getElementById("vm"),vs=document.getElementById("vs");let vt=0,st={h:0,ok:0};
+const norm=t=>t.toLowerCase().replace(/[čć]/g,"c").replace(/š/g,"s").replace(/ž/g,"z").replace(/đ/g,"d").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+function say(h,ms){vs.innerHTML=h;vs.hidden=false;clearTimeout(vt);vt=setTimeout(()=>{vs.hidden=true},ms||5000)}
+const click=id=>()=>document.getElementById(id).click();
+const room=f=>()=>{if(mode!=="room")setMode("room");stopCyc();f()};
+const ig=i=>room(()=>{setFocus(6);const b=igbar.querySelectorAll("button")[i];if(b)b.click()});
+const tool=n=>()=>{const t=TOOLS.find(x=>norm(x[0])===n);if(t)openTool(t)};
+const C=[
+[["cijeli zid","zid","zida","pregled"],"Zid",room(()=>setFocus(-1))],
+[["instagram","instagrama","instagram zid"],"Instagram",room(()=>setFocus(6))],
+[["virtualni voditelj","voditelj","voditelja","voditelju"],"Voditelj",room(()=>setFocus(7))],
+[["alati","alat","alate","alata"],"Alati",room(()=>setFocus(8))],
+[["iduce","sljedece","dalje","naprijed"],"Idući panel",room(()=>document.getElementById("nx").click())],
+[["prethodno","prethodni","natrag","nazad"],"Prethodni panel",room(()=>document.getElementById("pv").click())],
+[["ciklus","automatski","auto"],"Ciklus",room(()=>document.getElementById("bc").click())],
+[["cijeli zaslon","puni zaslon","fullscreen"],"Cijeli zaslon",click("bf")],
+[["kontrolna soba","soba"],"Kontrolna soba",()=>{setMode("room")}],
+[["3d grad","grad","gradu"],"3D grad",click("m2")],
+[["promet dana","promet"],"Promet dana",room(()=>setFocus(0))],
+[["objekti","objekte","lokali","lokale"],"Objekti",room(()=>setFocus(1))],
+[["placanja","placanje","nacini placanja","nacin placanja"],"Plaćanja",room(()=>setFocus(2))],
+[["promet po satima","po satima","sati"],"Promet po satima",room(()=>setFocus(3))],
+[["28 dana","dvadeset osam dana","dana"],"28 dana",room(()=>setFocus(4))],
+[["top artikli","artikli","artikle"],"Top artikli",room(()=>setFocus(5))],
+[["korzo","korza","korzu","korzo 23"],"Instagram Korzo 23",ig(0)],
+[["franz koch","franz","koch"],"Instagram Franz Koch",ig(1)],
+[["walpo","hotel walpo"],"Instagram Hotel Walpo",ig(2)],
+[["bulart"],"Instagram Bulart",ig(3)],
+[["otvori slack","slack"],"Otvori Slack",tool("slack")],
+[["otvori gmail","gmail","mail"],"Otvori Gmail",tool("gmail")],
+[["otvori drive","drive"],"Otvori Drive",tool("drive")],
+[["otvori fina","fina"],"Otvori FINA",tool("fina")],
+[["otvori mostportal","mostportal","most portal"],"Otvori MOSTportal",tool("mostportal")],
+[["pomoc","naredbe"],"Pomoć",()=>say("<b>Naredbe:</b>\nzid · Instagram · voditelj · alati\niduće · prethodno · ciklus · cijeli zaslon\nkontrolna soba · 3D grad\npromet · objekti · plaćanja · po satima · 28 dana · artikli\nKorzo · Franz Koch · Walpo · Bulart\notvori Slack / Gmail / Drive / FINA / MOSTportal",14000)]
+];
+function match(alts){let best=null,bl=0;for(const a of alts){const n=" "+norm(a)+" ";for(const c of C)for(const p of c[0]){const pp=" "+p+" ";if(n.includes(pp)&&p.length>bl){best=c;bl=p.length}}}return best}
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,on=false;
+if(!SR){vm.onclick=()=>say("Ovaj preglednik ne podržava prepoznavanje govora. Koristi Chrome.")}
+else{
+ function start(){if(on)return;rec=new SR();rec.lang="hr-HR";rec.interimResults=false;rec.maxAlternatives=3;rec.continuous=false;
+  rec.onresult=e=>{const alts=[];for(let i=0;i<e.results[0].length;i++)alts.push(e.results[0][i].transcript);const heard=alts[0];st.h++;const c=match(alts);
+   if(c){st.ok++;try{c[2]()}catch(x){}say("Čuo sam: <b>“"+heard+"”</b>\n→ "+c[1]+"\nPrepoznato "+st.ok+"/"+st.h)}
+   else say("Čuo sam: <b>“"+heard+"”</b>\nNije prepoznato (reci “pomoć”)\nPrepoznato "+st.ok+"/"+st.h)};
+  rec.onerror=e=>{const m={"not-allowed":"Mikrofon nije dopušten (dopusti ga u pregledniku; u artefaktu je blokiran).","no-speech":"Nisam ništa čuo.","audio-capture":"Nema mikrofona.","network":"Greška mreže pri prepoznavanju."};say(m[e.error]||("Greška: "+e.error))};
+  rec.onend=()=>{on=false;vm.classList.remove("rec");vm.textContent="🎤 Govori"};
+  try{rec.start();on=true;vm.classList.add("rec");vm.textContent="🎤 Slušam…";say("Slušam… reci naredbu",8000)}catch(x){}}
+ function stop(){if(rec&&on){try{rec.stop()}catch(x){}}}
+ vm.addEventListener("pointerdown",e=>{e.preventDefault();start()});
+ ["pointerup","pointerleave","pointercancel"].forEach(ev=>vm.addEventListener(ev,stop));
+ document.addEventListener("keydown",e=>{if(e.code==="Space"&&!e.repeat&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||"")){e.preventDefault();start()}});
+ document.addEventListener("keyup",e=>{if(e.code==="Space")stop()});
+}
+window.__voiceTest=t=>{const c=match([t]);return c?c[1]:null};
+})();
+
+/* ===== ulaz u cijeli zaslon preko linka #cijeli-zaslon ===== */
+(function(){const g=document.getElementById("fsg");if(!g)return;
+ if(location.hash!=="#cijeli-zaslon"||document.fullscreenElement)return;
+ g.hidden=false;
+ function go(){try{const p=stage.requestFullscreen&&stage.requestFullscreen();if(p&&p.catch)p.catch(()=>{})}catch(e){}g.hidden=true;document.removeEventListener("keydown",kd,true);setTimeout(size,80)}
+ function kd(e){if(e.key==="Escape")return;go()}
+ document.getElementById("fsgo").onclick=go;document.addEventListener("keydown",kd,true);
+ g.addEventListener("pointerdown",e=>{if(e.target===g)go()});
+})();
 </script>
